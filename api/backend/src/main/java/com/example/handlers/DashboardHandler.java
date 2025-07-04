@@ -33,7 +33,7 @@ public class DashboardHandler {
                 return;
             }
     
-            JsonArray row = countsRes.result(); // ✅ Use JsonArray
+            JsonArray row = countsRes.result(); 
             JsonObject counts = new JsonObject()
                 .put("totalEmployees", row.getInteger(0))
                 .put("totalProjects", row.getInteger(1))
@@ -52,7 +52,7 @@ public class DashboardHandler {
                     return;
                 }
     
-                JsonArray recentTasks = new JsonArray(tasksRes.result().getRows()); // ✅ Convert List<JsonObject> to JsonArray
+                JsonArray recentTasks = new JsonArray(tasksRes.result().getRows()); 
                 dashboardData.put("recentTasks", recentTasks);
     
                 sendSuccessResponse(ctx, dashboardData);
@@ -66,14 +66,14 @@ public class DashboardHandler {
         String managerQuery = "SELECT " +
             "(SELECT COUNT(*) FROM projects) AS totalProjects, " +
             "(SELECT COUNT(*) FROM tasks) AS totalTasks, " +
-            "(SELECT COUNT(*) FROM tasks WHERE status = 'ASSIGNED') AS assignedTasks, " + // New
+            "(SELECT COUNT(*) FROM tasks WHERE status = 'ASSIGNED') AS assignedTasks, " + 
             "(SELECT COUNT(*) FROM tasks WHERE status = 'IN_PROGRESS' OR status = 'IN PROGRESS') AS inProgressTasks, " + // More flexible
             "(SELECT COUNT(*) FROM tasks WHERE status = 'COMPLETED') AS completedTasks, " +
             "(SELECT COUNT(*) FROM teams) AS totalTeams, " +
             "(SELECT COUNT(*) FROM employees) AS totalEmployees, " +
             "(SELECT COUNT(*) FROM employees WHERE status = 'ACTIVE') AS activeEmployees, " +
             "(SELECT COUNT(*) FROM employees WHERE status = 'ON_LEAVE') AS onLeaveEmployees, " +
-            "(SELECT ROUND(AVG(progress), 2) FROM projects) AS projectProgress, " + // Rounded
+            "(SELECT ROUND(AVG(progress), 2) FROM projects) AS projectProgress, " + 
             "(SELECT ROUND(AVG(DATEDIFF(end_date, CURDATE())), 0) FROM projects WHERE end_date >= CURDATE()) AS daysRemaining"; // Only future dates
     
         dbClient.query(managerQuery, queryRes -> {

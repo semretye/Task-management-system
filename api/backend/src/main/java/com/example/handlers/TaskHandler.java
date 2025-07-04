@@ -78,7 +78,7 @@ public class TaskHandler {
             // Check if a task with the same title already exists
             dbClient.queryWithParams("SELECT COUNT(*) as count FROM tasks WHERE title = ?", new JsonArray().add(title), checkRes -> {
                 if (checkRes.succeeded()) {
-                    int count = checkRes.result().iterator().next().getInteger("count");
+                    int count = checkRes.result().getRows().get(0).getInteger("count");
                     if (count > 0) {
                         context.response()
                             .setStatusCode(409) // Conflict
@@ -498,5 +498,4 @@ public class TaskHandler {
                     .encode());
         }
     }
-
 }

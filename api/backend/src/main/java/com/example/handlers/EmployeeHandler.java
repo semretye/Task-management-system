@@ -14,9 +14,9 @@ public class EmployeeHandler {
 
     public EmployeeHandler(JDBCClient dbClient) {
         this.dbClient = dbClient;
-        // ObjectMapper objectMapper = new ObjectMapper();
-        // objectMapper.registerModule(new JavaTimeModule());
-        // JsonObject.setMapper(objectMapper);
+
+
+
     }
     private void executeQuery(String query, JsonArray params, RoutingContext context, String successMessage) {
         dbClient.updateWithParams(query, params, res -> {
@@ -74,11 +74,11 @@ public class EmployeeHandler {
     }
 
 public void getallusers(RoutingContext context) {
-    System.out.println("MMMMMMMMMMMMMMMMMMMMMMM");
+   
     dbClient.query("SELECT * FROM users", res -> {
         if (res.succeeded()) {
             List<JsonObject> rows = res.result().getRows();
-    System.out.println("MMMMMMMMMMMMMMMMMMMMMMM");
+
             
             // Convert LocalDateTime fields to string
             List<JsonObject> processedRows = rows.stream().map(row -> {
@@ -95,7 +95,6 @@ public void getallusers(RoutingContext context) {
             }).toList();
 
             JsonArray jsonArray = new JsonArray(processedRows);  
-    System.out.println("MMMMMMMMMMMMMMMMMMMMMMM"+jsonArray);
 
             context.response()
                 .putHeader("Content-Type", "application/json")

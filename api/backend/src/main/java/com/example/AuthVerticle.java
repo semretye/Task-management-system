@@ -55,7 +55,7 @@ public class AuthVerticle extends AbstractVerticle {
         router.post("/api/login").handler(this::handleLogin);
         router.post("/api/register").handler(this::handleRegister);
         router.patch("/api/assign_roles/:id/role").handler(this::assignRoles);
-
+        router.delete("/api/users/:id").handler(this::deleteuser);
         vertx.createHttpServer()
             .requestHandler(router)
             .listen(8080) // Changed from 8081 to 8080
@@ -110,7 +110,42 @@ public class AuthVerticle extends AbstractVerticle {
         });
     }
     
-
+    public void deleteuser(RoutingContext context) {
+        String id = context.pathParam("id");
+    
+        // Ensure the ID is not null or invalid
+        if (id == null || id.isEmpty()) {
+            context.response()
+                .setStatusCode(400)
+                .end(new JsonObject().put("error", "user ID is required").encode());
+            return;
+        }
+    
+        // Delete the employee from the database
+        dbClient.updateWithParams(
+            "DELETE FROM users WHERE id = ?",
+            new JsonArray().add(id),
+            res -> {
+                if (res.succeeded()) {
+                    // Return a 204 No Content status code for successful deletion
+                    context.response().setStatusCode(204).end();
+                } else {
+                    // Log the error for debugging purposes
+                    System.err.println("Error deleting employee with ID: " + id);
+                    res.cause().printStackTrace();
+    
+                    // Return a 500 Internal Server Error status with the error message
+                    context.response()
+                        .setStatusCode(500)
+                        .putHeader("Content-Type", "application/json")
+                        .end(new JsonObject()
+                            .put("status", "error")
+                            .put("message", "Failed to delete employee")
+                            .put("details", res.cause().getMessage())
+                            .encode());
+                }
+            });
+    }
     private void handleRegister(RoutingContext ctx) {
         try {
             JsonObject registrationData = ctx.getBodyAsJson();
